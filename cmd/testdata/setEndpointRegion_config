@@ -1,0 +1,25 @@
+[profile before-credhas-confighas_after-credhas-confighas]
+region = after-config
+
+[profile before-crednil-confighas_after-credhas-confighas]
+region = after-config
+
+[profile before-crednil-confignil_after-credhas-confighas]
+region = after-config
+
+[profile before-crednil-confignil_after-crednil-confighas]
+region = after-config
+
+[profile before-crednil-confignil_after-crednil-confignil]
+
+[profile before-credhas-confighas_after-credhas-confighas-before-mfa]
+region = before-config
+
+[profile before-crednil-confighas_after-credhas-confighas-before-mfa]
+region = before-config
+
+[profile before-crednil-confignil_after-credhas-confighas-before-mfa]
+
+[profile before-crednil-confignil_after-crednil-confighas-before-mfa]
+
+[profile before-crednil-confignil_after-crednil-confignil-before-mfa]

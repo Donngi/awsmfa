@@ -1,0 +1,9 @@
+[profile crednil-confignil]
+
+[profile credhas-confignil]
+
+[profile credhas-confighas]
+awsmfa_role_arn = config-role-arn
+
+[profile crednil-confighas]
+awsmfa_role_arn = config-role-arn

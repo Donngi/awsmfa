@@ -1,0 +1,12 @@
+[profile crednil-confignil]
+
+
+[profile cred30000-confignil]
+
+
+[profile cred30000-config20000]
+duration_seconds = 20000
+
+[profile crednil-config20000]
+duration_seconds = 20000
+

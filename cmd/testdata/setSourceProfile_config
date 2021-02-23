@@ -1,0 +1,9 @@
+[profile crednil-confignil]
+
+[profile credhas-confignil]
+
+[profile credhas-confighas]
+source_profile = config-profile
+
+[profile crednil-confighas]
+source_profile = config-profile

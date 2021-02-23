@@ -1,0 +1,9 @@
+[profile crednil-confignil]
+
+[profile credhas-confignil]
+
+[profile credhas-confighas]
+role_session_name = config-session-name
+
+[profile crednil-confighas]
+role_session_name = config-session-name

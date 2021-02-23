@@ -1,0 +1,9 @@
+[profile crednil-confignil]
+
+[profile credhas-confignil]
+
+[profile credhas-confighas]
+mfa_serial = config-serial
+
+[profile crednil-confighas]
+mfa_serial = config-serial
