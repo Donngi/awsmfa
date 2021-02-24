@@ -1,5 +1,5 @@
 # AWS MFA resolver in Go
-![DEMO](https://github.com/Jimon-s/awsmfa/blob/images/awsmfa-demo.gif)
+![DEMO](https://github.com/Jimon-s/awsmfa/blob/images/demo.gif)
 
 The 'awsmfa' is a simple cli tool for AWS MFA.
 Both AWS STS GetSessionToken and AssumeRole API are supported.
