@@ -170,7 +170,7 @@ func runRootCmd(cmd *cobra.Command, args []string) error {
 	}
 	awsmfaCfg, err := ini.Load(awsmfaCfgFilePath)
 	if err != nil {
-		printBlue(fmt.Sprintf("[Tips] There isn't an awsmfa's setting file. You can set some default values to place the setting file at: %v. If you would like to make it by cli, please use 'awsmfa --generate-configuration-file true'\n", awsmfaCfgFilePath))
+		printBlue(fmt.Sprintf("[Tips] There isn't an awsmfa's configuration file. You can set some default values to place the configuration file at: %v. If you would like to make it by cli, please use 'awsmfa --generate-configuration-file true'\n", awsmfaCfgFilePath))
 	}
 
 	// Set target profile.
