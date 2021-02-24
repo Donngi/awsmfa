@@ -35,16 +35,16 @@ var (
 // Changeable by awsmfa's configuration file ($HOME/.awsmfa/configuration).
 // The comment on the side is a corresponded parameter in the configuration file ([section-name] key-name).
 var (
-	credentialsFilePath                         = os.ExpandEnv("$HOME/.aws/credentials") // [filepath] credentials_file_path
-	configFilePath                              = os.ExpandEnv("$HOME/.aws/config")      // [filepath] config_file_path
-	beforeMFASuffix                             = "-before-mfa"                          // [default-value] suffix_of_before_mfa_profile
-	defaultMode                                 = "get-session-token"                    // [default-value] mode
-	defaultProfile                              = "default"                              // [default-value] profile
-	defaultMFASerial                            = "unspecified"                          // [default-value] mfa_serial
-	defaultEndpointRegion                       = "aws_global"                           // [default-value] endpoint_region
-	defaultDurationSecondsGetSessionToken int32 = 43200                                  // [default-value] duration_seconds_get_session_token
-	defaultDurationSecondsAssumeRole      int32 = 3600                                   // [default-value] duration_seconds_assume_role
-	defaultRoleSessionName                      = "awsmfa-session"                       // [default-value] role_session_name
+	credentialsFilePath                   string                       // [filepath] credentials_file_path
+	configFilePath                        string                       // [filepath] config_file_path
+	beforeMFASuffix                              = "-before-mfa"       // [default-value] suffix_of_before_mfa_profile
+	defaultMode                                  = "get-session-token" // [default-value] mode
+	defaultProfile                               = "default"           // [default-value] profile
+	defaultMFASerial                             = "unspecified"       // [default-value] mfa_serial
+	defaultEndpointRegion                        = "aws_global"        // [default-value] endpoint_region
+	defaultDurationSecondsGetSessionToken int32  = 43200               // [default-value] duration_seconds_get_session_token
+	defaultDurationSecondsAssumeRole      int32  = 3600                // [default-value] duration_seconds_assume_role
+	defaultRoleSessionName                       = "awsmfa-session"    // [default-value] role_session_name
 )
 
 // Source of request params.
@@ -64,7 +64,18 @@ var (
 	awsmfaCfgFilePath = awsmfaCfgFileDir + "/" + awsmfaCfgFileName
 )
 
-func initDefault(awsmfaCfgFilePath string) {
+func initBuildInDefault() {
+	p, err := os.UserHomeDir()
+	if err != nil {
+		credentialsFilePath = "/.aws/credentials"
+		configFilePath = "/.aws/config"
+	} else {
+		credentialsFilePath = p + "/.aws/credentials"
+		configFilePath = p + "/.aws/config"
+	}
+}
+
+func initUserDefault(awsmfaCfgFilePath string) {
 	awsmfaCfg, err := ini.Load(awsmfaCfgFilePath)
 	if err != nil {
 		return
@@ -97,7 +108,8 @@ func NewCmdRoot() *cobra.Command {
 	}
 
 	cobra.OnInitialize(func() {
-		initDefault(awsmfaCfgFilePath)
+		initBuildInDefault()
+		initUserDefault(awsmfaCfgFilePath)
 	})
 
 	cmd.PersistentFlags().StringVarP(&cliMode, "mode", "m", "", "The action mode of awsmfa, get-session-token or assume-role. The default value is get-session-token. If you specify the awsmfa_role_arn in shared credentials/config file or --role-arn option, awsmfa automatically turns the mode to assume-role.")

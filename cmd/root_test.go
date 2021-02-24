@@ -273,7 +273,7 @@ func Test_saveTemporaryTokenFromAssumeRole(t *testing.T) {
 	}()
 }
 
-func Test_initDefault(t *testing.T) {
+func Test_initUserDefault(t *testing.T) {
 	type settableValue struct {
 		credentialsFilePath                   string
 		configFilePath                        string
@@ -316,7 +316,7 @@ func Test_initDefault(t *testing.T) {
 		args args
 		want settableValue
 	}{
-		{name: "S01", args: args{awsmfaCfgFilePath: "testdata/initDefault_configuration"}, want: applied},
+		{name: "S01", args: args{awsmfaCfgFilePath: "testdata/initUserDefault_configuration"}, want: applied},
 		{name: "S02", args: args{awsmfaCfgFilePath: "unspecified"}, want: initial},
 	}
 	for _, tt := range tests {
@@ -336,7 +336,7 @@ func Test_initDefault(t *testing.T) {
 
 			os.Setenv("TESTHOME", "testhome")
 
-			initDefault(tt.args.awsmfaCfgFilePath)
+			initUserDefault(tt.args.awsmfaCfgFilePath)
 
 			got := settableValue{
 				credentialsFilePath:                   credentialsFilePath,
