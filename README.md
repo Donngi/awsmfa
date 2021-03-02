@@ -21,6 +21,14 @@ clone this repo
 $ go install
 ```
 
+or
+
+```
+Go 1.16~
+go install github.com/Jimon-s/awsmfa@latest
+```
+
+
 ## Quick start
 First, you should set profile in your shared credentials and config file (By default, it's placed `${HOME}/.aws/credentials` and `${HOME}/.aws/config`).
 It will be used in executing sts api to obtain temporary credentials.
