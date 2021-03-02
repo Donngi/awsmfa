@@ -25,7 +25,8 @@ or
 
 ```
 Go 1.16~
-go install github.com/Jimon-s/awsmfa@latest
+
+$ go install github.com/Jimon-s/awsmfa@latest
 ```
 
 
