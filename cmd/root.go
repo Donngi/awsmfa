@@ -112,6 +112,7 @@ func NewCmdRoot() *cobra.Command {
 		initUserDefault(awsmfaCfgFilePath)
 	})
 
+	// Flags
 	cmd.PersistentFlags().StringVarP(&cliMode, "mode", "m", "", "The action mode of awsmfa, get-session-token or assume-role. The default value is get-session-token. If you specify the awsmfa_role_arn in shared credentials/config file or --role-arn option, awsmfa automatically turns the mode to assume-role.")
 	cmd.PersistentFlags().StringVarP(&cliProfile, "profile", "p", "", "The profile used to get the token. You should set 'xxxx' if you have set 'xxxx-before-mfa' in the shared credentials/config file (.aws/credentials and .aws/config). The default value is 'default'")
 	cmd.PersistentFlags().Int32VarP(&cliDurationSeconds, "duration-seconds", "d", 0, "The duration of the temporary security credential. Minimun value: 900 seconds (15 minutes). Max value is different depend on the authentification mode. If you try to get token of same account (with GetSessionToken), Max value is 129600 seconds (36h). In the case of assume role (with AssumeRole), Max value is 43200 seconds (12h). The default value is GetSessionToken=43200 seconds (12h), AssumeRole=3600 seconds (1h).")
@@ -125,6 +126,12 @@ func NewCmdRoot() *cobra.Command {
 	cmd.PersistentFlags().StringVar(&cliGenerateCredentialsSkeleton, "generate-credentials-skeleton", "", "Generate skeleton of shared credentials file (by default, ${HOME}/.aws/credentials) for specified action mode, get-session-token or assume-role.")
 	cmd.PersistentFlags().StringVar(&cliGenerateConfigSkeleton, "generate-config-skeleton", "", "Generate skeleton of shared config file (by default, ${HOME}/.aws/config). for specified action mode, get-session-token or assume-role.")
 	cmd.PersistentFlags().BoolVar(&cliGenerateConfigurationFile, "generate-configuration-file", false, fmt.Sprintf("Generate awsmfa's configuration file at %v", awsmfaCfgFilePath))
+
+	// Sub commands
+	cmd.AddCommand(NewCmdCompletion())
+	// TODO: Comment out if cobra v1.1.4~ is launched
+	// This will hide help message of completion.
+	// cmd.CompletionOptions.DisableDescriptions = true
 
 	return cmd
 }
