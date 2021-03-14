@@ -13,12 +13,12 @@ func generateCredentialsSkeleton(mode string) (string, error) {
 		skeleton = `[sample-before-mfa]
 aws_access_key_id     = YOUR_ACCESS_KEY_ID_HERE!!!
 aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE!!!
-	`
+`
 	case "assume-role":
 		skeleton = `[sample-before-mfa]
 aws_access_key_id     = YOUR_ACCESS_KEY_ID_HERE!!!
 aws_secret_access_key = YOUR_SECRET_ACCESS_KEY_HERE!!!
-	`
+`
 	default:
 		return "ERROR", fmt.Errorf("invalid mode")
 	}
@@ -46,7 +46,7 @@ output = json
 # output         = json
 # role_arn       = YOUR_ROLE_TO_ASSUME_HERE!!! # Such as arn:aws:iam::XXXXXXXXXXX:role/ZZZZ
 # source_profile = sample-before-mfa
-	`
+`
 	case "assume-role":
 		skeleton = `[profile sample-before-mfa]
 region          = REGION_TO_CONNECT_IN_EXECUTING_STS_ASSUME_ROLE # Such as ap-northeast-1, us-east-1
@@ -57,7 +57,7 @@ awsmfa_role_arn = YOUR_ROLE_TO_ASSUME_HERE!!! # Such as arn:aws:iam::XXXXXXXXXXX
 [profile sample]
 region = REGION_TO_CONNECT_AFTER_MFA # Such as ap-northeast-1, us-east-1
 output = json
-	`
+`
 	default:
 		return "ERROR", fmt.Errorf("invalid mode")
 	}
@@ -79,7 +79,7 @@ profile                            = default
 endpoint_region                    = aws_global
 duration_seconds_get_session_token = 43200
 duration_seconds_assume_role       = 3600
-	`
+`
 
 	p := dir + "/" + file
 
