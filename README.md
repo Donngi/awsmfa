@@ -15,6 +15,13 @@ From my exeperience, MFA and STS operation are sometimes a point of a trouble sh
 - Support both GetSessionToken and AssumeRole API
 
 ## Installing
+### Homebrew
+```
+$ brew tap Jimon-s/awsmfa
+$ brew install awsmfa
+```
+
+### The others
 ```
 clone this repo
 
