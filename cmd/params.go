@@ -18,7 +18,7 @@ func setMode(cliOpt string, defaultValue string, profile string, cred *ini.File,
 	if cliOpt == "get-session-token" || cliOpt == "assume-role" {
 		return cliOpt, CliOpt.String(), nil
 	} else if cliOpt != "" {
-		return "ERROR", "ERROR", fmt.Errorf("Invalid action mode: action mode should be \"get-session-token\" or \"assume-role\"")
+		return "ERROR", "ERROR", fmt.Errorf("invalid action mode: action mode should be \"get-session-token\" or \"assume-role\"")
 	}
 
 	if cred.Section(profile).HasKey("awsmfa_role_arn") {
@@ -39,7 +39,7 @@ func setMode(cliOpt string, defaultValue string, profile string, cred *ini.File,
 		return defaultValue, AwsmfaBuildIn.String(), nil
 	}
 
-	return "ERROR", "ERROR", fmt.Errorf("Invalid action mode: action mode should be \"get-session-token\" or \"assume-role\"")
+	return "ERROR", "ERROR", fmt.Errorf("invalid action mode: action mode should be \"get-session-token\" or \"assume-role\"")
 }
 
 // setProfile returns a profile to be used.
