@@ -8,7 +8,7 @@ tidy:
 	
 .PHONY: pr-prep
 pr-prep:
-	go test
+	go test ./cmd
 
 .PHONY: update-dependencies
 update-dependencies:
