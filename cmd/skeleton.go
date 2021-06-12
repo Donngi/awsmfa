@@ -84,7 +84,7 @@ duration_seconds_assume_role       = 3600
 	p := dir + "/" + file
 
 	if _, err := os.Stat(p); err == nil {
-		return fmt.Errorf("The file already exists. %v", p)
+		return fmt.Errorf("the file already exists. %v", p)
 	}
 
 	if err := os.MkdirAll(dir, os.ModePerm); err != nil {
