@@ -50,6 +50,9 @@ PowerShell:
 	PS> awsmfa completion powershell > awsmfa.ps1
 	# and source this file from your PowerShell profile.
 `,
+		DisableFlagsInUseLine: true,
+		ValidArgs:             []string{"bash", "zsh", "fish", "powershell"},
+		Args:                  cobra.ExactValidArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			switch args[0] {
 			case "bash":
