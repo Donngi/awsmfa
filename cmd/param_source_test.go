@@ -2,10 +2,10 @@ package cmd
 
 import "testing"
 
-func Test_source_String(t *testing.T) {
+func Test_paramSource_String(t *testing.T) {
 	tests := []struct {
 		name string
-		s    source
+		s    paramSource
 	}{
 		{name: "S01", s: CliOpt},
 		{name: "S02", s: SharedCredentials},
@@ -23,7 +23,7 @@ func Test_source_String(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := tt.s.String(); got == "unknown source" {
-				t.Errorf("source.String() = %v", got)
+				t.Errorf("paramSource.String() = %v", got)
 			}
 		})
 	}

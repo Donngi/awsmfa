@@ -1,10 +1,10 @@
 package cmd
 
-// Source of request params.
-type source int
+// paramSource of request params.
+type paramSource int
 
 const (
-	_ source = iota
+	_ paramSource = iota
 	CliOpt
 	SharedCredentials
 	SharedCredentialsBeforeMFAProfile
@@ -19,7 +19,7 @@ const (
 	EnvAWSProfile
 )
 
-func (s source) String() string {
+func (s paramSource) String() string {
 	switch s {
 	case CliOpt:
 		return "cli option"
@@ -46,5 +46,5 @@ func (s source) String() string {
 	case EnvAWSProfile:
 		return "env AWS_PROFILE"
 	}
-	return "unknown source"
+	return "unknown paramSource"
 }
