@@ -47,6 +47,12 @@ var (
 	defaultRoleSessionName                       = "awsmfa-session"    // [default-value] role_session_name
 )
 
+var (
+	awsmfaCfgFileDir  = os.ExpandEnv("$HOME/.awsmfa")
+	awsmfaCfgFileName = "configuration"
+	awsmfaCfgFilePath = awsmfaCfgFileDir + "/" + awsmfaCfgFileName
+)
+
 // Source of request params.
 type source struct {
 	profile         string
@@ -57,12 +63,6 @@ type source struct {
 	endpointRegion  string
 	apiType         string
 }
-
-var (
-	awsmfaCfgFileDir  = os.ExpandEnv("$HOME/.awsmfa")
-	awsmfaCfgFileName = "configuration"
-	awsmfaCfgFilePath = awsmfaCfgFileDir + "/" + awsmfaCfgFileName
-)
 
 func initBuildInDefault() {
 	p, err := os.UserHomeDir()
