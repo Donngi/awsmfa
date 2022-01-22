@@ -48,15 +48,15 @@ var (
 )
 
 // Source of request params.
-var (
-	sourceProfile         string
-	sourceDurationSeconds string
-	sourceMFASerial       string
-	sourceRoleArn         string
-	sourceRoleSessionName string
-	sourceEndpointRegion  string
-	sourceAPIType         string
-)
+type source struct {
+	profile         string
+	durationSeconds string
+	mfaSerial       string
+	roleArn         string
+	roleSessionName string
+	endpointRegion  string
+	apiType         string
+}
 
 var (
 	awsmfaCfgFileDir  = os.ExpandEnv("$HOME/.awsmfa")
@@ -167,6 +167,8 @@ func runRootCmd(cmd *cobra.Command, args []string) error {
 	}
 
 	// Load credentials, config and awsmfa's configuration files.
+	var source source
+
 	cred, err := ini.Load(credentialsFilePath)
 	if err != nil {
 		return fmt.Errorf("failed to load credentials file: %w", err)
@@ -182,7 +184,7 @@ func runRootCmd(cmd *cobra.Command, args []string) error {
 
 	// Set target profile.
 	profile, _s := setProfile(cliProfile, defaultProfile, awsmfaCfg)
-	sourceProfile = _s
+	source.profile = _s
 
 	// Check if initial configuration has been completed correctly.
 	if _, err := cred.GetSection(profile + beforeMFASuffix); err != nil {
@@ -203,18 +205,18 @@ func runRootCmd(cmd *cobra.Command, args []string) error {
 	// Execute a handler according to action mode (GetSessionToken or AssumeRole).
 	// The action mode is forcely turned to "assume-role" if --role-arn is specified or awsmfa_role_arn is specified in your shared credentials/config file.
 	mode, _s, err := setMode(cliMode, defaultMode, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceAPIType = _s
+	source.apiType = _s
 	if err != nil {
 		return fmt.Errorf("%w", err)
 	}
 
 	switch mode {
 	case "get-session-token":
-		if err := handleGetSessionToken(profile, cred, cfg, awsmfaCfg, cmd.Flags().Lookup("silent").Changed); err != nil {
+		if err := handleGetSessionToken(profile, cred, cfg, awsmfaCfg, &source, cmd.Flags().Lookup("silent").Changed); err != nil {
 			return fmt.Errorf("failed to get-session-token: %w", err)
 		}
 	case "assume-role":
-		if err := handleAssumeRole(profile, cred, cfg, awsmfaCfg, cmd.Flags().Lookup("silent").Changed); err != nil {
+		if err := handleAssumeRole(profile, cred, cfg, awsmfaCfg, &source, cmd.Flags().Lookup("silent").Changed); err != nil {
 			return fmt.Errorf("failed to assume-role: %w", err)
 		}
 	default:
@@ -224,7 +226,7 @@ func runRootCmd(cmd *cobra.Command, args []string) error {
 	return nil
 }
 
-func handleGetSessionToken(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *ini.File, isSilent bool) error {
+func handleGetSessionToken(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *ini.File, source *source, isSilent bool) error {
 	// Load long term credentials.
 	// To match the priority of credentials and config params (such as access_key) to aws's default order, including environment variables,
 	// awsmfa is sure to reload credentials and config file with aws-sdk-go-v2's build in loading config function before execute GetSessionToken API.
@@ -237,14 +239,14 @@ func handleGetSessionToken(profile string, cred *ini.File, cfg *ini.File, awsmfa
 
 	// Set request params.
 	durationSeconds, _s := setDurationSeconds(cliDurationSeconds, defaultDurationSecondsGetSessionToken, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceDurationSeconds = _s
+	source.durationSeconds = _s
 	mfaSerial, _s, err := setMFASerial(cliMfaSerial, defaultMFASerial, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceMFASerial = _s
+	source.mfaSerial = _s
 	if err != nil {
 		return fmt.Errorf("The mfa_serial is not specified. You can set it in %v, %v, %v or --serial-number", credentialsFilePath, configFilePath, awsmfaCfgFilePath)
 	}
 	endpointRegion, _s := setEndpointRegion(cliEndpointRegion, defaultEndpointRegion, profile, cred, cfg, awsmfaCfg)
-	sourceEndpointRegion = _s
+	source.endpointRegion = _s
 
 	// Show request params.
 	h, m, s := secToHMS(durationSeconds)
@@ -263,12 +265,12 @@ func handleGetSessionToken(profile string, cred *ini.File, cfg *ini.File, awsmfa
 		table.SetHeader([]string{"Parameter", "Value"})
 	} else {
 		data = [][]string{
-			{"Profile to exec MFA", profile + beforeMFASuffix, sourceProfile},
+			{"Profile to exec MFA", profile + beforeMFASuffix, source.profile},
 			// {"Credentials", fmt.Sprintf("[Only for DEBUG] %+v", c.Credentials)},
-			{"Duration of token", fmt.Sprintf("%v sec (%vh %vm %vs)", durationSeconds, h, m, s), sourceDurationSeconds},
-			{"MFA device's serial", mfaSerial, sourceMFASerial},
-			{"Region", endpointRegion, sourceEndpointRegion},
-			{"API Type", "AWS STS GetSessionToken", sourceAPIType},
+			{"Duration of token", fmt.Sprintf("%v sec (%vh %vm %vs)", durationSeconds, h, m, s), source.durationSeconds},
+			{"MFA device's serial", mfaSerial, source.mfaSerial},
+			{"Region", endpointRegion, source.endpointRegion},
+			{"API Type", "AWS STS GetSessionToken", source.apiType},
 		}
 		table.SetHeader([]string{"Parameter", "Value", "Source"})
 	}
@@ -303,7 +305,7 @@ func handleGetSessionToken(profile string, cred *ini.File, cfg *ini.File, awsmfa
 	return nil
 }
 
-func handleAssumeRole(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *ini.File, isSilent bool) error {
+func handleAssumeRole(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *ini.File, source *source, isSilent bool) error {
 	// Load long term credentials.
 	// To match the priority of credentials and config params (such as access_key) to aws's default order, including environment variables,
 	// awsmfa is sure to reload credentials and config file with aws-sdk-go-v2's build in loading config function before execute AssumeRole API.
@@ -316,21 +318,21 @@ func handleAssumeRole(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *
 
 	// Set request params.
 	durationSeconds, _s := setDurationSeconds(cliDurationSeconds, defaultDurationSecondsAssumeRole, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceDurationSeconds = _s
+	source.durationSeconds = _s
 	mfaSerial, _s, err := setMFASerial(cliMfaSerial, defaultMFASerial, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceMFASerial = _s
+	source.mfaSerial = _s
 	if err != nil {
 		return fmt.Errorf("The mfa_serial is not specified. You can set it in %v, %v, %v or --serial-number", credentialsFilePath, configFilePath, awsmfaCfgFilePath)
 	}
 	endpointRegion, _s := setEndpointRegion(cliEndpointRegion, defaultEndpointRegion, profile, cred, cfg, awsmfaCfg)
-	sourceEndpointRegion = _s
+	source.endpointRegion = _s
 	roleArn, _s, err := setRoleArn(cliRoleArn, profile+beforeMFASuffix, cred, cfg)
-	sourceRoleArn = _s
+	source.roleArn = _s
 	if err != nil {
 		return fmt.Errorf("The role_arn is not specified. You can set it in %v, %v or --role-arn", credentialsFilePath, configFilePath)
 	}
 	roleSessionName, _s := setRoleSessionName(cliRoleSessionName, defaultRoleSessionName, profile+beforeMFASuffix, cred, cfg, awsmfaCfg)
-	sourceRoleSessionName = _s
+	source.roleSessionName = _s
 
 	// Show request params.
 	h, m, s := secToHMS(durationSeconds)
@@ -351,14 +353,14 @@ func handleAssumeRole(profile string, cred *ini.File, cfg *ini.File, awsmfaCfg *
 		table.SetHeader([]string{"Parameter", "Value"})
 	} else {
 		data = [][]string{
-			{"Profile to exec MFA", profile + beforeMFASuffix},
+			{"Profile to exec MFA", profile + beforeMFASuffix, source.profile},
 			// {"Credentials", fmt.Sprintf("[Only for DEBUG] %+v", c.Credentials)},
-			{"Role arn to assume", fmt.Sprintf("%v", roleArn)},
-			{"Role session name", fmt.Sprintf("%v", roleSessionName)},
-			{"Duration of token", fmt.Sprintf("%v sec (%vh %vm %vs)", durationSeconds, h, m, s)},
-			{"MFA device's serial", mfaSerial},
-			{"Region", endpointRegion},
-			{"API Type", "AWS STS AssumeRole"},
+			{"Role arn to assume", fmt.Sprintf("%v", roleArn), source.roleArn},
+			{"Role session name", fmt.Sprintf("%v", roleSessionName), source.roleSessionName},
+			{"Duration of token", fmt.Sprintf("%v sec (%vh %vm %vs)", durationSeconds, h, m, s), source.durationSeconds},
+			{"MFA device's serial", mfaSerial, source.mfaSerial},
+			{"Region", endpointRegion, source.endpointRegion},
+			{"API Type", "AWS STS AssumeRole", source.apiType},
 		}
 		table.SetHeader([]string{"Parameter", "Value", "Source"})
 	}
